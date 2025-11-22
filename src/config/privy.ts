@@ -1,7 +1,7 @@
 import { PrivyClientConfig } from '@privy-io/react-auth';
 
 export const privyConfig = {
-  appId: process.env.VITE_PRIVY_APP_ID || 'clxxxxxxxxxxxxxx', // Replace with your Privy App ID
+  appId: import.meta.env.VITE_PRIVY_APP_ID || 'clxxxxxxxxxxxxxx', // Replace with your Privy App ID
   config: {
     loginMethods: ['email'],
     appearance: {
