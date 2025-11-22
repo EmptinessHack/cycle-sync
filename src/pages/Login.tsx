@@ -1,17 +1,12 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePrivy } from '@privy-io/react-auth';
 import styles from './Login.module.css';
 
 const Login = () => {
-  const { login, authenticated, ready } = usePrivy();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (ready && authenticated) {
-      navigate('/setup');
-    }
-  }, [ready, authenticated, navigate]);
+  const handleGetStarted = () => {
+    navigate('/setup');
+  };
 
   return (
     <div className={styles.container}>
@@ -38,11 +33,10 @@ const Login = () => {
 
         <button 
           className="btn-primary"
-          onClick={login}
-          disabled={!ready}
+          onClick={handleGetStarted}
           style={{ width: '100%', maxWidth: '320px' }}
         >
-          Sign in with Email
+          Get Started
         </button>
 
         <p className={styles.privacy}>

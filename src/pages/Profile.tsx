@@ -1,22 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { usePrivy } from '@privy-io/react-auth';
 import TopHeader from '../components/TopHeader';
 import BottomNav from '../components/BottomNav';
 import { clearUserData } from '../utils/storage';
 import styles from './Profile.module.css';
 
 const Profile = () => {
-  const { authenticated, user, logout } = usePrivy();
   const navigate = useNavigate();
-
-  if (!authenticated) {
-    navigate('/');
-    return null;
-  }
 
   const handleLogout = () => {
     clearUserData();
-    logout();
     navigate('/');
   };
 
@@ -27,7 +19,7 @@ const Profile = () => {
         <div className={styles.profileCard}>
           <div className={styles.avatar}>L</div>
           <h2>Luna</h2>
-          <p className={styles.email}>{user?.email?.address || 'No email'}</p>
+          <p className={styles.email}>Demo Mode</p>
         </div>
 
         <div className={styles.section}>
@@ -39,7 +31,7 @@ const Profile = () => {
 
         <div className={styles.section}>
           <button className={styles.logoutBtn} onClick={handleLogout}>
-            Log out
+            Clear data & restart
           </button>
         </div>
       </div>
