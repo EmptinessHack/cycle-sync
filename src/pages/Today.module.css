@@ -1,0 +1,179 @@
+.container {
+  min-height: 100vh;
+  background: var(--color-background);
+  padding-bottom: 80px;
+}
+
+.content {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.dateSelector {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  padding: var(--spacing-xs) 0;
+  scrollbar-width: none;
+}
+
+.dateSelector::-webkit-scrollbar {
+  display: none;
+}
+
+.dateBtn {
+  min-width: 64px;
+  padding: var(--spacing-sm);
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dateBtn:hover {
+  border-color: var(--color-primary);
+}
+
+.dateBtn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.dayNum {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.dayName {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.phaseBanner {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  color: white;
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.phaseContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.dayLabel {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.phaseName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.phaseDesc {
+  font-size: 0.9375rem;
+  opacity: 0.95;
+  margin: 0;
+}
+
+.loadSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.loadHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loadHeader h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.loadPercent {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.loadBar {
+  height: 8px;
+  background: var(--color-input-bg);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.loadFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-2));
+  transition: width var(--transition-slow);
+}
+
+.taskSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.taskHeader h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.addQuickTask {
+  background: var(--color-highlight);
+  color: white;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addQuickTask:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 166, 43, 0.3);
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text);
+  opacity: 0.6;
+}
