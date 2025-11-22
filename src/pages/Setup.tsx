@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePrivy } from '@privy-io/react-auth';
 import CycleInput from '../components/CycleInput';
 import TaskFormCard from '../components/TaskFormCard';
 import { Task } from '../types';
@@ -9,22 +8,17 @@ import { saveUserData, loadUserData } from '../utils/storage';
 import styles from './Setup.module.css';
 
 const Setup = () => {
-  const { authenticated, ready } = usePrivy();
   const navigate = useNavigate();
   const [cycleDay, setCycleDay] = useState(1);
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    if (ready && !authenticated) {
-      navigate('/');
-    } else {
-      const saved = loadUserData();
-      if (saved) {
-        setCycleDay(saved.cycleDay);
-        setTasks(saved.tasks);
-      }
+    const saved = loadUserData();
+    if (saved) {
+      setCycleDay(saved.cycleDay);
+      setTasks(saved.tasks);
     }
-  }, [ready, authenticated, navigate]);
+  }, []);
 
   const addTask = () => {
     const newTask: Task = {

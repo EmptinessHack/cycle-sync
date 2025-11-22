@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePrivy } from '@privy-io/react-auth';
 import TopHeader from '../components/TopHeader';
 import BottomNav from '../components/BottomNav';
 import ScheduledTaskCard from '../components/ScheduledTaskCard';
@@ -10,23 +9,18 @@ import { ScheduledTask } from '../types';
 import styles from './Today.module.css';
 
 const Today = () => {
-  const { authenticated, ready } = usePrivy();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
-    if (ready && !authenticated) {
-      navigate('/');
+    const data = loadUserData();
+    if (!data || data.schedule.length === 0) {
+      navigate('/setup');
     } else {
-      const data = loadUserData();
-      if (!data || data.schedule.length === 0) {
-        navigate('/setup');
-      } else {
-        setUserData(data);
-      }
+      setUserData(data);
     }
-  }, [ready, authenticated, navigate]);
+  }, [navigate]);
 
   if (!userData) return null;
 

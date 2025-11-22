@@ -1,18 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-import { usePrivy } from '@privy-io/react-auth';
 import TopHeader from '../components/TopHeader';
 import BottomNav from '../components/BottomNav';
 import styles from './Tasks.module.css';
 
 const Tasks = () => {
-  const { authenticated } = usePrivy();
-  const navigate = useNavigate();
-
-  if (!authenticated) {
-    navigate('/');
-    return null;
-  }
-
   return (
     <div className={styles.container}>
       <TopHeader />
