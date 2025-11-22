@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Servicio de desarrollo
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: cycle-sync-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      # Montar el código fuente para hot-reload
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_PRIVY_APP_ID=${VITE_PRIVY_APP_ID:-}
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    networks:
+      - cycle-sync-network
+
+  # Servicio de producción (opcional, comentado por defecto)
+  # app-prod:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: production
+  #   container_name: cycle-sync-prod
+  #   ports:
+  #     - "80:80"
+  #   restart: unless-stopped
+  #   networks:
+  #     - cycle-sync-network
+
+networks:
+  cycle-sync-network:
+    driver: bridge
+
