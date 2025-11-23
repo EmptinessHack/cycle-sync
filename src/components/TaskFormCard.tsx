@@ -13,22 +13,6 @@ interface TaskFormCardProps {
 
 const categories = ['Entrepreneur', 'Home', 'Mother', 'Student', 'Fitness', 'Social', 'Self-care'];
 
-const TaskFormCard = ({ task, onSave, onDelete, isUploading, uploadError }: TaskFormCardProps) => {
-  const [formData, setFormData] = useState<Task>(
-    task || {
-      id: Date.now().toString(),
-      title: '',
-      category: 'Entrepreneur',
-      isFixed: false,
-      duration: '01:00',
-      date: '',
-      startTime: '09:00',
-      endTime: '10:00',
-      deadline: '',
-      repeatsWeekly: false,
-      isProject: false,
-    }
-  );
 // Helper functions for time calculations
 const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(':').map(Number);
@@ -62,7 +46,7 @@ const generateTimeOptions = () => {
 
 const timeOptions = generateTimeOptions();
 
-const TaskFormCard = ({ task, onSave, onDelete }: TaskFormCardProps) => {
+const TaskFormCard = ({ task, onSave, onDelete, isUploading, uploadError }: TaskFormCardProps) => {
   const initialTask = task || {
     id: Date.now().toString(),
     title: '',
@@ -377,11 +361,13 @@ const TaskFormCard = ({ task, onSave, onDelete }: TaskFormCardProps) => {
 
       <button 
         type="submit" 
-        className={`btn-primary ${styles.submitBtn} ${isSaving ? styles.saving : ''} ${isSaved ? styles.saved : ''}`}
-        disabled={isSaving}
+        className={`btn-primary ${styles.submitBtn} ${isSaving || isUploading ? styles.saving : ''} ${isSaved ? styles.saved : ''}`}
+        disabled={isSaving || isUploading}
         style={{ width: '100%', marginTop: 'var(--spacing-sm)' }}
       >
-        {isSaving ? (
+        {isUploading ? (
+          <>⏳ Guardando en IPFS...</>
+        ) : isSaving ? (
           <>
             <span className={styles.spinner}></span>
             {task ? 'Updating...' : 'Adding...'}
@@ -393,40 +379,6 @@ const TaskFormCard = ({ task, onSave, onDelete }: TaskFormCardProps) => {
           </>
         ) : (
           task ? 'Update Task' : 'Add Task'
-        )}
-      </div>
-
-      <div className={styles.switches}>
-        <label className={styles.switch}>
-          <input
-            type="checkbox"
-            checked={formData.repeatsWeekly}
-            onChange={(e) => updateField('repeatsWeekly', e.target.checked)}
-          />
-          <span>Repeats weekly</span>
-        </label>
-        <label className={styles.switch}>
-          <input
-            type="checkbox"
-            checked={formData.isProject}
-            onChange={(e) => updateField('isProject', e.target.checked)}
-          />
-          <span>This is a project</span>
-        </label>
-      </div>
-
-      <button 
-        type="submit" 
-        className="btn-primary" 
-        style={{ width: '100%', marginTop: 'var(--spacing-sm)' }}
-        disabled={isUploading}
-      >
-        {isUploading ? (
-          <>⏳ Guardando en IPFS...</>
-        ) : task ? (
-          'Update Task'
-        ) : (
-          'Add Task'
         )}
       </button>
       
