@@ -7,7 +7,7 @@ export const PRIVY_APP_ID = import.meta.env.VITE_PRIVY_APP_ID || '';
 export const privyConfig = {
   appId: PRIVY_APP_ID,
   config: {
-    loginMethods: ['email'],
+    loginMethods: ['email', 'google', 'telegram', 'apple'],
     appearance: {
       theme: 'light',
       accentColor: '#16697A',

@@ -1,0 +1,210 @@
+.screen {
+  background: var(--color-background);
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.logoCircle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-background);
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logoText {
+  color: var(--color-background);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 16px;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.confirmationPrompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.envelopeIcon {
+  font-size: 20px;
+}
+
+.instructions {
+  text-align: center;
+  color: var(--color-text);
+  opacity: 0.7;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.codeInputContainer {
+  margin-bottom: 16px;
+}
+
+.codeInputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.codeInput {
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--color-input-border);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.2s;
+  background: var(--color-input-bg);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.codeInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(22, 105, 122, 0.1);
+}
+
+.codeInput.filled {
+  border-color: var(--color-primary);
+}
+
+.codeInput.success {
+  border-color: var(--color-accent-2);
+  background: rgba(72, 159, 181, 0.1);
+}
+
+.codeSeparator {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  opacity: 0.5;
+  margin: 0 4px;
+}
+
+.successMessage {
+  text-align: center;
+  color: var(--color-accent-2);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.resendLink {
+  text-align: center;
+  color: var(--color-text);
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.resendBtn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.resendBtn:hover {
+  color: var(--color-accent-2);
+}
+
+@media (max-width: 480px) {
+  .screen {
+    padding: 24px 16px;
+    min-height: auto;
+    border-radius: 16px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .codeInput {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .logoCircle {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+}
+
+/* Botón de bypass para desarrollo */
+.bypassContainer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-input-border);
+  text-align: center;
+}
+
+.bypassBtn {
+  background: transparent;
+  border: 1px dashed var(--color-primary);
+  color: var(--color-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  opacity: 0.7;
+}
+
+.bypassBtn:hover {
+  opacity: 1;
+  background: var(--color-primary);
+  color: white;
+  border-style: solid;
+}
+
+@media (min-width: 768px) {
+  .screen {
+    padding: 48px 40px;
+  }
+}
+
