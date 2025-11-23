@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import TestEncryption from "./pages/TestEncryption";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "./components/ui/sonner";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const AppContent = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <Toaster />
       </ThemeProvider>
     </DemoAuthProvider>
   );

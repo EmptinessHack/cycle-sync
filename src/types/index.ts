@@ -1,5 +1,7 @@
 export type CyclePhase = 'Menstrual' | 'Follicular' | 'Ovulatory' | 'Luteal';
 
+export type RepeatFrequency = 'none' | 'daily' | 'weekdays' | 'weekly' | 'monthly';
+
 export interface Task {
   id: string;
   title: string;
@@ -10,7 +12,7 @@ export interface Task {
   startTime?: string; // For fixed tasks
   endTime?: string; // For fixed tasks
   deadline?: string; // For flexible tasks
-  repeatsWeekly?: boolean;
+  repeatFrequency?: RepeatFrequency; // How often the task repeats
   isProject?: boolean;
 }
 

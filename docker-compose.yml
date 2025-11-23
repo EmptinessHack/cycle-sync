@@ -14,11 +14,11 @@ services:
       # Montar el código fuente para hot-reload
       - .:/app
       - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - VITE_PRIVY_APP_ID=${VITE_PRIVY_APP_ID:-}
     env_file:
       - .env
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - VITE_PRIVY_APP_ID=${VITE_PRIVY_APP_ID:-}
     stdin_open: true
     tty: true
     restart: unless-stopped

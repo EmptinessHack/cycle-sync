@@ -35,7 +35,7 @@ const Setup = () => {
       category: 'Entrepreneur',
       isFixed: false,
       duration: '01:00',
-      repeatsWeekly: false,
+      repeatFrequency: 'none',
       isProject: false,
     };
     setTasks([...tasks, newTask]);
@@ -131,6 +131,35 @@ const Setup = () => {
                 />
               ))
             )}
+          </div>
+        </div>
+
+        <div className={styles.connectToolsCard}>
+          <h3 className={styles.connectToolsTitle}>Connect your tools</h3>
+          <p className={styles.connectToolsSubtitle}>
+            Soon, CYRA will sync with your favorite planners so all your commitments live in one cycle-aware view.
+          </p>
+          <div className={styles.integrationsList}>
+            <div className={styles.integrationItem}>
+              <div className={styles.integrationIcon}>G</div>
+              <span className={styles.integrationName}>Google Calendar</span>
+              <span className={styles.soonBadge}>Soon</span>
+            </div>
+            <div className={styles.integrationItem}>
+              <div className={styles.integrationIcon}>N</div>
+              <span className={styles.integrationName}>Notion</span>
+              <span className={styles.soonBadge}>Soon</span>
+            </div>
+            <div className={styles.integrationItem}>
+              <div className={styles.integrationIcon}>S</div>
+              <span className={styles.integrationName}>Slack</span>
+              <span className={styles.soonBadge}>Soon</span>
+            </div>
+            <div className={styles.integrationItem}>
+              <div className={styles.integrationIcon}>A</div>
+              <span className={styles.integrationName}>Asana</span>
+              <span className={styles.soonBadge}>Soon</span>
+            </div>
           </div>
         </div>
 

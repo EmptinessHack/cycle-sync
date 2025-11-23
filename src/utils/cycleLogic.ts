@@ -59,7 +59,7 @@ export const organizeTasksByCyclePhase = (
         phase: getCyclePhase(cycleDay),
         energyLevel: 'medium',
         isProject: task.isProject,
-        repeats: task.repeatsWeekly,
+        repeats: task.repeatFrequency && task.repeatFrequency !== 'none',
       });
     }
   });

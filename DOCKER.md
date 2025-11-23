@@ -28,7 +28,17 @@ NODE_ENV=development
 
 ### Desarrollo
 
-Para iniciar el servidor de desarrollo:
+#### Opción 1: Usando el script helper (Windows)
+
+```powershell
+# Iniciar el servidor (crea .env automáticamente si no existe)
+.\docker-dev.ps1 start
+
+# O simplemente
+.\docker-dev.ps1
+```
+
+#### Opción 2: Comandos directos
 
 ```bash
 # Construir y levantar el contenedor
@@ -39,6 +49,8 @@ docker-compose up -d --build
 ```
 
 El servidor estará disponible en: **http://localhost:8080**
+
+> **Nota:** El archivo `.env` se carga automáticamente desde la raíz del proyecto. Si no existe, el script `docker-dev.ps1` lo creará automáticamente con valores por defecto.
 
 ### Detener el servidor
 
@@ -166,11 +178,40 @@ docker-compose build --no-cache
 docker-compose up
 ```
 
+## Scripts Helper
+
+### Windows (PowerShell)
+
+El script `docker-dev.ps1` facilita el manejo del proyecto:
+
+```powershell
+.\docker-dev.ps1 start      # Inicia el servidor
+.\docker-dev.ps1 stop       # Detiene el servidor
+.\docker-dev.ps1 restart    # Reinicia el servidor
+.\docker-dev.ps1 logs       # Muestra logs en tiempo real
+.\docker-dev.ps1 build      # Reconstruye la imagen
+.\docker-dev.ps1 shell      # Abre shell en el contenedor
+.\docker-dev.ps1 clean      # Limpia todo
+.\docker-dev.ps1 help       # Muestra ayuda
+```
+
+### Linux/macOS (Bash)
+
+El script `docker-dev.sh` proporciona la misma funcionalidad:
+
+```bash
+./docker-dev.sh start      # Inicia el servidor
+./docker-dev.sh stop       # Detiene el servidor
+# ... etc
+```
+
 ## Estructura de Archivos Docker
 
 - `Dockerfile`: Configuración multi-stage (desarrollo y producción)
-- `docker-compose.yml`: Orquestación de servicios
+- `docker-compose.yml`: Orquestación de servicios con soporte para `.env`
 - `.dockerignore`: Archivos excluidos del build
+- `docker-dev.ps1`: Script helper para Windows
+- `docker-dev.sh`: Script helper para Linux/macOS
 
 ## Ventajas de usar Docker
 

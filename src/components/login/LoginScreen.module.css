@@ -19,21 +19,10 @@
   margin-bottom: 16px;
 }
 
-.logoCircle {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-background);
-  font-weight: bold;
-  font-size: 20px;
-}
-
-.logoText {
-  color: var(--color-background);
+.logoImage {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
 }
 
 .title {
@@ -220,10 +209,9 @@
     font-size: 20px;
   }
 
-  .logoCircle {
-    width: 50px;
-    height: 50px;
-    font-size: 18px;
+  .logoImage {
+    width: 100px;
+    height: 100px;
   }
 }
 

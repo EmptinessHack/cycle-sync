@@ -3,9 +3,13 @@
  * 
  * Este módulo se encarga exclusivamente de subir datos cifrados a IPFS
  * mediante el servicio Pinata usando el SDK oficial.
+ * 
+ * NOTA: El import de Pinata se hace dinámicamente para evitar errores de carga.
  */
 
-import { PinataSDK } from 'pinata';
+// Variable para almacenar el SDK de Pinata (se carga dinámicamente)
+// Usamos 'any' para evitar que TypeScript intente resolver el módulo al evaluar el tipo
+let PinataSDKClass: any = null;
 
 export interface IPFSUploadInput {
   ciphertext: string; // base64
@@ -42,32 +46,51 @@ export async function uploadToIPFS(
       );
     }
 
-    // 2. Crear el objeto JSON con los datos cifrados
+    // 2. Cargar PinataSDK dinámicamente si no está cargado
+    // Usamos una cadena literal para el import para evitar análisis estático
+    if (!PinataSDKClass) {
+      try {
+        // Import dinámico usando string literal para evitar análisis estático de Vite
+        const pinataModule = await import(/* @vite-ignore */ 'pinata');
+        PinataSDKClass = pinataModule.PinataSDK;
+      } catch (importError) {
+        throw new Error(
+          `Failed to load Pinata SDK: ${importError instanceof Error ? importError.message : 'Unknown error'}. Make sure the 'pinata' package is installed.`
+        );
+      }
+    }
+
+    // Verificar que PinataSDK se cargó correctamente
+    if (!PinataSDKClass) {
+      throw new Error('Failed to load Pinata SDK');
+    }
+
+    // 3. Crear el objeto JSON con los datos cifrados
     const encryptedData = {
       ciphertext: input.ciphertext,
       iv: input.iv,
       tag: input.tag,
     };
 
-    // 3. Convertir a JSON string y crear Blob
+    // 4. Convertir a JSON string y crear Blob
     const jsonString = JSON.stringify(encryptedData);
     const jsonBlob = new Blob([jsonString], { type: 'application/json' });
 
-    // 4. Inicializar el SDK de Pinata
-    const pinata = new PinataSDK({
+    // 5. Inicializar el SDK de Pinata
+    const pinata = new PinataSDKClass({
       pinataJwt: PINATA_JWT,
       ...(PINATA_GATEWAY && { pinataGateway: PINATA_GATEWAY }),
     });
 
-    // 5. Crear un File desde el Blob para el SDK
+    // 6. Crear un File desde el Blob para el SDK
     const file = new File([jsonBlob], 'encrypted-data.json', {
       type: 'application/json',
     });
 
-    // 6. Subir a Pinata usando el SDK (subida pública)
+    // 7. Subir a Pinata usando el SDK (subida pública)
     const result = await pinata.upload.public.file(file);
 
-    // 7. Retornar CID y tamaño
+    // 8. Retornar CID y tamaño
     return {
       cid: result.cid || '',
       size: result.size || jsonBlob.size,

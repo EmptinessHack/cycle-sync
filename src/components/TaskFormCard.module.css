@@ -81,8 +81,6 @@
 }
 
 .field {
-  flex: 1;
-  min-width: 120px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
@@ -95,8 +93,55 @@
   opacity: 0.8;
 }
 
+/* Duration field - tamaño optimizado para input único */
+.durationField {
+  flex: 0 0 auto;
+  width: 140px;
+}
+
+/* Date field - tamaño medio para fecha */
+.dateField {
+  flex: 0 0 auto;
+  width: 160px;
+}
+
+/* Time fields (Start/End) - tamaño medio para selector de hora */
+.timeField {
+  flex: 0 0 auto;
+  width: 150px;
+}
+
+/* Inputs base - tamaño de texto unificado */
 .input {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  height: 40px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  color: var(--color-text);
+}
+
+.timeSelect {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  color: var(--color-text);
+  cursor: pointer;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+/* Duration input único - formato HH:MM en una sola caja */
+.durationInputSingle {
+  padding: var(--spacing-sm) var(--spacing-md);
+  height: 40px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: var(--color-text);
+  text-align: center;
+  letter-spacing: 0.5px;
 }
 
 .switches {
@@ -117,4 +162,83 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
+}
+
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  position: relative;
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.submitBtn.saving {
+  opacity: 0.8;
+}
+
+.submitBtn.saving:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(22, 105, 122, 0.3);
+}
+
+.submitBtn.saved {
+  background: var(--color-accent-2) !important;
+  animation: successPulse 0.5s ease;
+}
+
+.submitBtn.saved:hover {
+  background: var(--color-accent-2) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(72, 159, 181, 0.4);
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.checkmark {
+  font-size: 1.2rem;
+  font-weight: bold;
+  animation: checkmarkPop 0.3s ease;
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
