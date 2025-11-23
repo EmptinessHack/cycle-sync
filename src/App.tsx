@@ -5,10 +5,12 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { PrivyDemoProvider } from './contexts/PrivyDemoContext';
 import { DemoAuthProvider } from './contexts/DemoAuthContext';
 import { privyConfig } from './config/privy';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import Login from "./pages/Login";
 import Setup from "./pages/Setup";
 import Today from "./pages/Today";
+import WeeklySchedule from "./pages/WeeklySchedule";
 import Calendar from "./pages/Calendar";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
@@ -47,6 +49,14 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <Today />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/weekly-schedule"
+              element={
+                <ProtectedRoute>
+                  <WeeklySchedule />
                 </ProtectedRoute>
               }
             />
@@ -104,9 +114,11 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AppContent />
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

@@ -93,7 +93,7 @@ const Setup = () => {
   const handleGenerate = () => {
     const schedule = organizeTasksByCyclePhase(cycleDay, tasks);
     saveUserData({ cycleDay, tasks, schedule });
-    navigate('/today');
+    navigate('/weekly-schedule');
   };
 
   return (

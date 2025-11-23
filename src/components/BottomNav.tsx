@@ -6,10 +6,10 @@ const BottomNav = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/today', icon: '🏠', label: 'Today' },
+    { path: '/weekly-schedule', icon: '🏠', label: 'Home' },
     { path: '/calendar', icon: '📅', label: 'Calendar' },
     { path: '/tasks', icon: '✓', label: 'Tasks' },
-    { path: '/profile', icon: '👤', label: 'Profile' },
+    { path: '/profile', icon: '👤', label: 'Settings' },
   ];
 
   return (
