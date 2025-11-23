@@ -9,7 +9,8 @@ const getBaseUrl = () => {
   if (typeof window !== 'undefined') {
     return window.location.origin;
   }
-  return 'http://localhost:8080';
+  // En producción, usar el dominio de Vercel
+  return import.meta.env.VITE_APP_URL || 'https://cycle-sync-poze.vercel.app';
 };
 
 export const privyConfig = {
