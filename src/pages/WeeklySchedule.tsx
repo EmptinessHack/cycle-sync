@@ -4,13 +4,27 @@ import TopHeader from '../components/TopHeader';
 import BottomNav from '../components/BottomNav';
 import { getMockSchedule, ScheduledTask } from '../lib/mockSchedule';
 import { getCyclePhase } from '../utils/cycleLogic';
+import { getCurrentCycleDay } from '../utils/cycleCalculator';
 import { loadUserData } from '../utils/storage';
 import styles from './WeeklySchedule.module.css';
+
+// Helper para obtener energyType de un task (compatible con ambos tipos)
+function getEnergyType(task: any): "deep-work" | "admin" | "social" | "rest" {
+  if (task.energyType) return task.energyType;
+  // Si tiene energyLevel, mapearlo a energyType
+  if (task.energyLevel === 'high') return 'deep-work';
+  if (task.energyLevel === 'medium') return task.phase === 'Luteal' ? 'admin' : 'social';
+  return 'rest';
+}
 
 const WeeklySchedule = () => {
   const navigate = useNavigate();
   const userData = loadUserData();
-  const currentCycleDay = userData?.cycleDay || 6;
+  
+  // Calcular día del ciclo automáticamente si hay lastPeriodDate
+  const currentCycleDay = userData 
+    ? getCurrentCycleDay(userData)
+    : 6;
   
   // Get current week dates (7 days starting from today)
   const weekDates = useMemo(() => {
@@ -23,9 +37,20 @@ const WeeklySchedule = () => {
     }
     return dates;
   }, []);
-  
-  // Get mock schedule data
-  const allTasks = useMemo(() => getMockSchedule(currentCycleDay), [currentCycleDay]);
+
+  // Usar schedule del usuario si existe, sino usar mock
+  const allTasks = useMemo(() => {
+    if (userData?.schedule && userData.schedule.length > 0) {
+      // Convertir tasks del usuario a formato compatible con WeeklySchedule
+      return userData.schedule.map((task: any) => ({
+        ...task,
+        energyType: getEnergyType(task),
+        cyclePhase: task.phase || getCyclePhase(currentCycleDay),
+        cycleDay: currentCycleDay,
+      })) as ScheduledTask[];
+    }
+    return getMockSchedule(currentCycleDay);
+  }, [currentCycleDay, userData]);
   
   // Get current phase info
   const currentPhase = getCyclePhase(currentCycleDay);
@@ -33,7 +58,7 @@ const WeeklySchedule = () => {
   
   // Calculate weekly summary
   const weeklySummary = useMemo(() => {
-    const deepWorkCount = allTasks.filter(t => t.energyType === 'deep-work').length;
+    const deepWorkCount = allTasks.filter(t => getEnergyType(t) === 'deep-work').length;
     const flexibleTasks = Math.floor(allTasks.length * 0.3);
     
     return {
@@ -165,6 +190,7 @@ const WeeklySchedule = () => {
                         <TaskBlock
                           key={task.id}
                           task={task}
+                          getEnergyType={getEnergyType}
                           style={{
                             top: `${top}px`,
                             height: `${height}px`,
@@ -188,14 +214,17 @@ const WeeklySchedule = () => {
 // Task Block Component
 const TaskBlock = ({ 
   task, 
-  style 
+  style,
+  getEnergyType
 }: { 
   task: ScheduledTask; 
   style: React.CSSProperties;
+  getEnergyType: (task: any) => "deep-work" | "admin" | "social" | "rest";
 }) => {
-  const energyIcon = getEnergyIcon(task.energyType);
-  const bgColor = getEnergyBackgroundColor(task.energyType);
-  const borderColor = getEnergyColor(task.energyType);
+  const energyType = getEnergyType(task);
+  const energyIcon = getEnergyIcon(energyType);
+  const bgColor = getEnergyBackgroundColor(energyType);
+  const borderColor = getEnergyColor(energyType);
   const categoryColor = getCategoryColor(task.category);
   
   return (

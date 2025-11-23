@@ -32,6 +32,8 @@ export interface ScheduledTask {
 
 export interface UserData {
   cycleDay: number;
+  lastPeriodDate?: string; // YYYY-MM-DD - Fecha del último periodo para calcular el día actual
+  cycleLength?: number; // Longitud del ciclo en días (default: 28)
   tasks: Task[];
   schedule: ScheduledTask[];
   

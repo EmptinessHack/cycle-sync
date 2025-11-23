@@ -6,17 +6,775 @@
 
 .content {
   padding: var(--spacing-xl) var(--spacing-md);
-  text-align: center;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
-.content h1 {
-  color: var(--color-text);
-  margin-bottom: var(--spacing-md);
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.content p {
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
   color: var(--color-text);
   opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+
+.userInfo {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.6;
+  margin-top: 0.5rem;
+}
+
+/* Estilos para el Agente Hormonal */
+.agentInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-weight: 500;
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.numberInput,
+.textInput {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background: white;
+  color: var(--color-text);
+}
+
+.numberInput:focus,
+.textInput:focus {
+  outline: none;
+  border-color: var(--color-primary, #667eea);
+}
+
+.phaseLabel {
+  font-size: 0.875rem;
+  color: var(--color-primary, #667eea);
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.generateButton {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--color-primary, #667eea) 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 0.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.generateButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.generateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorCard {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.errorText {
+  color: #c33;
+  margin: 0;
+}
+
+.agentResults {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.insightsCard,
+.forecastCard,
+.recommendationsCard,
+.activitiesCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border-left: 4px solid var(--color-primary, #667eea);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.insightsTitle,
+.forecastTitle,
+.recommendationsTitle,
+.activitiesTitle {
+  font-size: 1.25rem;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.insightsText {
+  color: var(--color-text);
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+.forecastGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.forecastItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: var(--color-background, #f8f9fa);
+  border-radius: 8px;
+}
+
+.forecastLabel {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+
+.forecastValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary, #667eea);
+  text-transform: capitalize;
+}
+
+.recommendationsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommendationItem {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: var(--color-background, #f8f9fa);
+  border-radius: 6px;
+  color: var(--color-text);
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.recommendationItem::before {
+  content: "✓ ";
+  color: var(--color-primary, #667eea);
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.activitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.activityItem {
+  background: var(--color-background, #f8f9fa);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.activityTitle {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.activityCategory {
+  font-size: 0.875rem;
+  color: var(--color-primary, #667eea);
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+.activityDetails {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.energyBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.energyBadge[data-level="high"] {
+  background: #d4edda;
+  color: #155724;
+}
+
+.energyBadge[data-level="medium"] {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.energyBadge[data-level="low"] {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.activityReason {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.6;
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.moreActivities {
+  text-align: center;
+  color: var(--color-text);
+  opacity: 0.6;
+  font-style: italic;
+  padding: 1rem;
+}
+
+/* Información del ciclo */
+.cycleInfo {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cycleInfoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cycleInfoLabel {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.cycleInfoValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary, #667eea);
+}
+
+/* Sección de síntomas */
+.symptomsSection {
+  margin-bottom: 2rem;
+}
+
+.sectionLabel {
+  display: block;
+  font-weight: 500;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.symptomsChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.symptomChip {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.symptomChip:hover {
+  border-color: var(--color-primary, #667eea);
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.symptomChipSelected {
+  background: var(--color-primary, #667eea);
+  color: white;
+  border-color: var(--color-primary, #667eea);
+}
+
+.chipRemove {
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-left: 0.25rem;
+}
+
+/* Sección de tareas */
+.tasksSection {
+  margin-bottom: 2rem;
+}
+
+.tasksList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.taskChip {
+  padding: 0.5rem 1rem;
+  background: var(--color-background, #f8f9fa);
+  border-radius: 20px;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  border: 1px solid #e0e0e0;
+}
+
+.noTasks {
+  color: var(--color-text);
+  opacity: 0.6;
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Sección de propuesta */
+.proposalSection {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  border: 2px solid var(--color-primary, #667eea);
+}
+
+.proposalTitle {
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.proposalDescription {
+  color: var(--color-text);
+  opacity: 0.7;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.changesSummary {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.changesSummary p {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.proposedTasks {
+  margin-bottom: 2rem;
+}
+
+.proposedTasksTitle {
+  font-size: 1.1rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.proposedTasksSubtitle {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.6;
+  margin-bottom: 1rem;
+}
+
+.tasksPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.taskPreviewItem {
+  background: var(--color-background, #f8f9fa);
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 3px solid var(--color-primary, #667eea);
+  transition: all 0.2s;
+}
+
+.taskPreviewItem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.taskPreviewItemConflict {
+  border-left-color: #dc3545;
+  background: rgba(220, 53, 69, 0.05);
+}
+
+.taskPreviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.taskPreviewHeaderLeft {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1;
+}
+
+.removeTaskButton {
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+  position: relative;
+}
+
+.removeTaskButton:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  transform: scale(1.1);
+}
+
+.removeTaskButton:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.removeTaskButton:active {
+  transform: scale(0.95);
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  background: #333;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  margin-bottom: 5px;
+  z-index: 1000;
+  font-weight: 500;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #333;
+}
+
+
+.taskPreviewTitle {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.taskPreviewCategory {
+  font-size: 0.875rem;
+  color: var(--color-primary, #667eea);
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+.taskPreviewDetails {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.7;
+  flex-wrap: wrap;
+}
+
+.moreTasks {
+  text-align: center;
+  color: var(--color-text);
+  opacity: 0.6;
+  font-style: italic;
+  padding: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.acceptButton {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--color-primary, #667eea) 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.acceptButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.acceptButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #ccc;
+}
+
+.cancelButton {
+  padding: 1rem 2rem;
+  background: white;
+  color: var(--color-text);
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  border-color: var(--color-primary, #667eea);
+  color: var(--color-primary, #667eea);
+}
+
+.noChanges {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.noChanges p {
+  margin: 0;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* Advertencias de conflictos */
+.conflictsWarning {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.conflictsTitle {
+  font-size: 1.1rem;
+  color: #856404;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.conflictsText {
+  color: #856404;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.conflictsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.conflictItem {
+  background: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  border-left: 3px solid #ffc107;
+}
+
+.conflictDate {
+  font-weight: 600;
+  color: #856404;
+  margin-right: 0.5rem;
+}
+
+.conflictTime {
+  color: #856404;
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+}
+
+.conflictTasks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.conflictTaskName {
+  background: rgba(255, 193, 7, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  color: #856404;
+}
+
+.conflictBadge {
+  background: #dc3545;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: var(--spacing-md);
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .agentInputs {
+    padding: 1rem;
+  }
+
+  .forecastGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .activityDetails {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .cycleInfo {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .proposalSection {
+    padding: 1.5rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .acceptButton,
+  .cancelButton {
+    width: 100%;
+  }
 }
