@@ -5,8 +5,8 @@ import TaskFormCard from '../components/TaskFormCard';
 import { Task } from '../types';
 import { organizeTasksByCyclePhase } from '../utils/cycleLogic';
 import { saveUserData, loadUserData } from '../utils/storage';
-import { usePrivySafe } from '../hooks/usePrivySafe';
 import { saveTaskToIPFS, saveTaskMetadataLocally } from '../utils/taskStorage';
+import { usePrivySafe } from '../hooks/usePrivySafe';
 import styles from './Setup.module.css';
 
 const Setup = () => {
@@ -17,7 +17,7 @@ const Setup = () => {
   const [uploadingTasks, setUploadingTasks] = useState<Set<string>>(new Set());
   const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
   
-  // Obtener userId del usuario autenticado
+  // Obtener userId de forma segura
   const userId = privyData?.user?.id || 'demo-user';
 
   useEffect(() => {
@@ -47,20 +47,18 @@ const Setup = () => {
       prev.map(t => (t.id === updatedTask.id ? updatedTask : t))
     );
 
-    // Subir a Pinata si la tarea tiene título y Pinata está configurado
+    // Subir a Pinata de forma asíncrona (no bloquea la UI)
+    // Solo si la tarea tiene título (está completa) y Pinata está configurado
     const hasPinataJWT = import.meta.env.VITE_PINATA_JWT;
     if (updatedTask.title.trim() && hasPinataJWT) {
-      // Marcar como uploading
       setUploadingTasks(prev => new Set(prev).add(updatedTask.id));
-      
-      // Limpiar errores previos
       setUploadErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[updatedTask.id];
         return newErrors;
       });
 
-      // Subir a IPFS de forma asíncrona
+      // Ejecutar de forma asíncrona sin bloquear
       saveTaskToIPFS(userId, updatedTask, cycleDay)
         .then((result) => {
           // Guardar metadatos localmente
@@ -76,7 +74,6 @@ const Setup = () => {
           console.error(`❌ Error al guardar tarea "${updatedTask.title}" en IPFS:`, error);
         })
         .finally(() => {
-          // Limpiar estado de uploading
           setUploadingTasks(prev => {
             const newSet = new Set(prev);
             newSet.delete(updatedTask.id);
@@ -149,3 +146,4 @@ const Setup = () => {
 };
 
 export default Setup;
+

@@ -2,8 +2,10 @@
  * Módulo para subir archivos cifrados a IPFS usando Pinata
  * 
  * Este módulo se encarga exclusivamente de subir datos cifrados a IPFS
- * mediante el servicio Pinata.
+ * mediante el servicio Pinata usando el SDK oficial.
  */
+
+import { PinataSDK } from 'pinata';
 
 export interface IPFSUploadInput {
   ciphertext: string; // base64
@@ -18,11 +20,10 @@ export interface IPFSUploadResult {
 
 /**
  * Configuración de Pinata desde variables de entorno
- * Prioridad: JWT (recomendado) > API Key + Secret Key
+ * Se usa JWT (método recomendado)
  */
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT?.trim() || '';
-const PINATA_API_KEY = import.meta.env.VITE_PINATA_API_KEY?.trim() || '';
-const PINATA_SECRET_KEY = import.meta.env.VITE_PINATA_SECRET_KEY?.trim() || '';
+const PINATA_GATEWAY = import.meta.env.VITE_PINATA_GATEWAY?.trim() || '';
 
 /**
  * Sube un archivo JSON cifrado a IPFS usando Pinata
@@ -34,62 +35,42 @@ export async function uploadToIPFS(
   input: IPFSUploadInput
 ): Promise<IPFSUploadResult> {
   try {
-    // 1. Crear el objeto JSON con los datos cifrados
+    // 1. Validar que el JWT esté configurado
+    if (!PINATA_JWT) {
+      throw new Error(
+        'Pinata JWT not configured. Set VITE_PINATA_JWT in your environment variables.'
+      );
+    }
+
+    // 2. Crear el objeto JSON con los datos cifrados
     const encryptedData = {
       ciphertext: input.ciphertext,
       iv: input.iv,
       tag: input.tag,
     };
 
-    // 2. Convertir a JSON string
+    // 3. Convertir a JSON string y crear Blob
     const jsonString = JSON.stringify(encryptedData);
     const jsonBlob = new Blob([jsonString], { type: 'application/json' });
 
-    // 3. Preparar FormData para la petición
-    const formData = new FormData();
-    formData.append('file', jsonBlob, 'encrypted-data.json');
-    
-    // Agregar opciones de Pinata
-    formData.append('pinataOptions', JSON.stringify({
-      cidVersion: 1,
-    }));
-
-    // 4. Configurar headers según el método de autenticación
-    // Nota: No establecemos Content-Type, el navegador lo hace automáticamente para FormData
-    const headers: HeadersInit = {};
-
-    // Priorizar JWT (método recomendado y más seguro)
-    if (PINATA_JWT) {
-      headers['Authorization'] = `Bearer ${PINATA_JWT}`;
-    } else if (PINATA_API_KEY && PINATA_SECRET_KEY) {
-      // Fallback a API Key + Secret Key (método legacy)
-      headers['pinata_api_key'] = PINATA_API_KEY;
-      headers['pinata_secret_api_key'] = PINATA_SECRET_KEY;
-    } else {
-      throw new Error(
-        'Pinata credentials not configured. ' +
-        'Set VITE_PINATA_JWT (recomendado) or VITE_PINATA_API_KEY and VITE_PINATA_SECRET_KEY'
-      );
-    }
-
-    // 5. Subir a Pinata
-    const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-      method: 'POST',
-      headers: headers,
-      body: formData,
+    // 4. Inicializar el SDK de Pinata
+    const pinata = new PinataSDK({
+      pinataJwt: PINATA_JWT,
+      ...(PINATA_GATEWAY && { pinataGateway: PINATA_GATEWAY }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Pinata upload failed: ${response.status} ${response.statusText} - ${errorText}`);
-    }
+    // 5. Crear un File desde el Blob para el SDK
+    const file = new File([jsonBlob], 'encrypted-data.json', {
+      type: 'application/json',
+    });
 
-    const result = await response.json();
+    // 6. Subir a Pinata usando el SDK (subida pública)
+    const result = await pinata.upload.public.file(file);
 
-    // 6. Retornar CID y tamaño
+    // 7. Retornar CID y tamaño
     return {
-      cid: result.IpfsHash || result.cid || '',
-      size: result.PinSize || result.size || jsonBlob.size,
+      cid: result.cid || '',
+      size: result.size || jsonBlob.size,
     };
   } catch (error) {
     throw new Error(

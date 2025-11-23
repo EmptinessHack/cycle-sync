@@ -32,4 +32,5 @@ export interface UserData {
   cycleDay: number;
   tasks: Task[];
   schedule: ScheduledTask[];
+  
 }

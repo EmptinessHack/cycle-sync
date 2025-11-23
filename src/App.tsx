@@ -12,6 +12,7 @@ import Today from "./pages/Today";
 import Calendar from "./pages/Calendar";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
+import TestEncryption from "./pages/TestEncryption";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -71,6 +72,10 @@ const AppContent = () => {
                   <Profile />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="/test-encryption"
+              element={<TestEncryption />}
             />
             <Route path="*" element={<NotFound />} />
           </Routes>

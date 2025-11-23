@@ -87,6 +87,10 @@ export async function encryptUserData(
       aiPrompt: input.aiPrompt,
     };
 
+    // 🔍 DEBUG: Ver qué se está encriptando (solo en desarrollo)
+    // Descomenta la siguiente línea para ver los datos antes de encriptar:
+    // console.log('📦 Datos que se van a encriptar:', JSON.stringify(dataToEncrypt, null, 2));
+
     // Convertir a JSON string
     const plaintext = JSON.stringify(dataToEncrypt);
 
