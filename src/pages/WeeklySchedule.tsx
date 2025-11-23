@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopHeader from '../components/TopHeader';
 import BottomNav from '../components/BottomNav';
@@ -20,11 +20,25 @@ function getEnergyType(task: any): "deep-work" | "admin" | "social" | "rest" {
 const WeeklySchedule = () => {
   const navigate = useNavigate();
   const userData = loadUserData();
+  const [selectedTask, setSelectedTask] = useState<ScheduledTask | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Calcular día del ciclo automáticamente si hay lastPeriodDate
   const currentCycleDay = userData 
     ? getCurrentCycleDay(userData)
     : 6;
+  
+  // Handler para abrir el modal con la tarea seleccionada
+  const handleTaskClick = (task: ScheduledTask) => {
+    setSelectedTask(task);
+    setIsDialogOpen(true);
+  };
+  
+  // Handler para cerrar el modal
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedTask(null);
+  };
   
   // Get current week dates (7 days starting from today)
   const weekDates = useMemo(() => {
@@ -191,6 +205,7 @@ const WeeklySchedule = () => {
                           key={task.id}
                           task={task}
                           getEnergyType={getEnergyType}
+                          onClick={() => handleTaskClick(task)}
                           style={{
                             top: `${top}px`,
                             height: `${height}px`,
@@ -206,6 +221,115 @@ const WeeklySchedule = () => {
         </div>
       </div>
       
+      {/* Task Details Modal */}
+      {isDialogOpen && selectedTask && (
+        <div className={styles.modalOverlay} onClick={handleCloseDialog}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            {/* Header con gradiente */}
+            <div 
+              className={styles.modalHeader}
+              style={{
+                background: `linear-gradient(135deg, ${getCategoryColor(selectedTask.category)} 0%, ${getCategoryColor(selectedTask.category)}dd 100%)`
+              }}
+            >
+              <div className={styles.modalHeaderContent}>
+                <h2 className={styles.modalTitle}>{selectedTask.title}</h2>
+                <div className={styles.modalCategoryBadge}>
+                  {selectedTask.category}
+                </div>
+              </div>
+              <button
+                onClick={handleCloseDialog}
+                className={styles.modalCloseButton}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* Contenido principal */}
+            <div className={styles.taskDialogContent}>
+              {/* Card de fecha y hora */}
+              <div className={styles.infoCard}>
+                <div className={styles.infoCardIcon}>📅</div>
+                <div className={styles.infoCardContent}>
+                  <div className={styles.infoCardLabel}>Fecha</div>
+                  <div className={styles.infoCardValue}>
+                    {new Date(selectedTask.date).toLocaleDateString('es-ES', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.infoCard}>
+                <div className={styles.infoCardIcon}>🕐</div>
+                <div className={styles.infoCardContent}>
+                  <div className={styles.infoCardLabel}>Horario</div>
+                  <div className={styles.infoCardValue}>
+                    {selectedTask.startTime} - {selectedTask.endTime}
+                    <span className={styles.durationBadge}>
+                      {(() => {
+                        const start = timeToMinutes(selectedTask.startTime);
+                        const end = timeToMinutes(selectedTask.endTime);
+                        const duration = end - start;
+                        const hours = Math.floor(duration / 60);
+                        const minutes = duration % 60;
+                        return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
+                      })()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card de fase del ciclo */}
+              <div className={styles.infoCard}>
+                <div className={styles.infoCardIcon}>🌙</div>
+                <div className={styles.infoCardContent}>
+                  <div className={styles.infoCardLabel}>Fase del ciclo</div>
+                  <div className={styles.infoCardValue}>
+                    {selectedTask.cyclePhase || selectedTask.phase || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Card de energía */}
+              <div className={styles.infoCard}>
+                <div className={styles.infoCardIcon}>
+                  {getEnergyIcon(getEnergyType(selectedTask))}
+                </div>
+                <div className={styles.infoCardContent}>
+                  <div className={styles.infoCardLabel}>Tipo de energía</div>
+                  <div className={styles.infoCardValue}>
+                    {getEnergyType(selectedTask) === 'deep-work' ? 'Trabajo profundo' :
+                     getEnergyType(selectedTask) === 'admin' ? 'Administrativo' :
+                     getEnergyType(selectedTask) === 'social' ? 'Social' : 'Descanso'}
+                    <span className={styles.energyLevelBadge}>
+                      {selectedTask.energyLevel || 
+                        (getEnergyType(selectedTask) === 'deep-work' ? 'Alta' :
+                         getEnergyType(selectedTask) === 'rest' ? 'Baja' : 'Media')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Footer simplificado */}
+            <div className={styles.taskDialogFooter}>
+              <button
+                onClick={handleCloseDialog}
+                className={styles.closeButton}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <BottomNav />
     </div>
   );
@@ -215,11 +339,13 @@ const WeeklySchedule = () => {
 const TaskBlock = ({ 
   task, 
   style,
-  getEnergyType
+  getEnergyType,
+  onClick
 }: { 
   task: ScheduledTask; 
   style: React.CSSProperties;
   getEnergyType: (task: any) => "deep-work" | "admin" | "social" | "rest";
+  onClick: () => void;
 }) => {
   const energyType = getEnergyType(task);
   const energyIcon = getEnergyIcon(energyType);
@@ -230,6 +356,7 @@ const TaskBlock = ({
   return (
     <div 
       className={styles.taskBlock}
+      onClick={onClick}
       style={{
         ...style,
         backgroundColor: bgColor,

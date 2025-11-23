@@ -11,9 +11,11 @@ import type {
   HormonalAgentInput,
   HormonalAgentResponse,
   GeneratedActivity,
+  UnScheduledActivity,
   Symptom,
   Goal,
   FixedActivity,
+  VariableActivity,
 } from '../types/hormonal';
 
 /**
@@ -154,6 +156,7 @@ function processAgentResponse(
 
     return {
       activities,
+      unScheduledActivities: parsed.unScheduledActivities || undefined,
       recommendations: parsed.recommendations || [],
       phaseInsights: parsed.phaseInsights || '',
       energyForecast: parsed.energyForecast || {
@@ -161,6 +164,7 @@ function processAgentResponse(
         tomorrow: 'medium',
         week: 'medium',
       },
+      restRecommendation: parsed.restRecommendation || undefined,
     };
   } catch (error) {
     console.error('Error al procesar respuesta del agente:', error);
@@ -251,12 +255,89 @@ function findNextAvailableSlot(
 }
 
 /**
+ * Detecta si una actividad es "pesada" o de alta intensidad
+ */
+function isHeavyActivity(activity: VariableActivity): boolean {
+  const heavyKeywords = [
+    'fitness', 'deporte', 'ejercicio', 'gym', 'correr', 'running',
+    'cardio', 'entrenamiento', 'workout', 'crossfit', 'pesas',
+    'natación', 'ciclismo', 'bicicleta', 'yoga intenso', 'pilates intenso'
+  ];
+  
+  const titleLower = activity.title.toLowerCase();
+  const categoryLower = activity.category.toLowerCase();
+  
+  return heavyKeywords.some(keyword => 
+    titleLower.includes(keyword) || categoryLower.includes(keyword)
+  );
+}
+
+/**
+ * Determina si una actividad debe agendarse según la fase y síntomas
+ */
+function shouldScheduleActivity(
+  activity: VariableActivity,
+  phase: CyclePhase,
+  symptoms: Symptom[],
+  weekIndex: number
+): { shouldSchedule: boolean; reason?: string; suggestedAction?: 'skip' | 'postpone' | 'modify' } {
+  const isHeavy = isHeavyActivity(activity);
+  const hasLowEnergy = symptoms.includes('baja energía') || symptoms.includes('fatiga');
+  const hasCramps = symptoms.includes('cólicos');
+  const hasPain = symptoms.includes('dolor de cabeza') || symptoms.includes('dolor de espalda');
+  
+  // Fase Menstrual: evitar actividades pesadas
+  if (phase === 'Menstrual' && isHeavy) {
+    return {
+      shouldSchedule: false,
+      reason: `Durante la fase menstrual, es mejor evitar actividades físicas intensas como "${activity.title}". Tu cuerpo necesita descanso y recuperación.`,
+      suggestedAction: 'skip'
+    };
+  }
+  
+  // Fase Menstrual con síntomas: evitar cualquier actividad pesada
+  if (phase === 'Menstrual' && (hasCramps || hasPain) && isHeavy) {
+    return {
+      shouldSchedule: false,
+      reason: `Con los síntomas que reportas (${hasCramps ? 'cólicos' : ''}${hasCramps && hasPain ? ' y ' : ''}${hasPain ? 'dolor' : ''}), es mejor descansar esta semana y evitar "${activity.title}".`,
+      suggestedAction: 'skip'
+    };
+  }
+  
+  // Fase Luteal con baja energía: evitar actividades pesadas
+  if (phase === 'Luteal' && hasLowEnergy && isHeavy) {
+    return {
+      shouldSchedule: false,
+      reason: `Con la baja energía que reportas y estando en la fase luteal, es mejor evitar actividades físicas intensas como "${activity.title}" esta semana.`,
+      suggestedAction: 'postpone'
+    };
+  }
+  
+  // Síntomas generales de baja energía con actividades pesadas
+  if (hasLowEnergy && isHeavy && (phase === 'Menstrual' || phase === 'Luteal')) {
+    return {
+      shouldSchedule: false,
+      reason: `Con la baja energía que reportas, considera descansar esta semana en lugar de hacer "${activity.title}".`,
+      suggestedAction: 'modify'
+    };
+  }
+  
+  return { shouldSchedule: true };
+}
+
+/**
  * Genera una respuesta por defecto basada en reglas simples
  * (Fallback cuando no hay IA disponible)
  */
 function generateDefaultResponse(input: HormonalAgentInput): HormonalAgentResponse {
   const activities: GeneratedActivity[] = [];
+  const unScheduledActivities: UnScheduledActivity[] = [];
   const today = new Date();
+  const currentPhase = getCyclePhase(input.cycleDay);
+  
+  // Verificar si hay recomendación de descanso para la semana
+  const needsRestWeek = currentPhase === 'Menstrual' || 
+    (currentPhase === 'Luteal' && (input.symptoms.includes('baja energía') || input.symptoms.includes('fatiga')));
   
   // Generar actividades para los próximos 7 días
   for (let i = 0; i < 7; i++) {
@@ -281,11 +362,32 @@ function generateDefaultResponse(input: HormonalAgentInput): HormonalAgentRespon
       startHour = 14; // Tarde para baja energía
     }
     
-    // Agregar actividades variables evitando empalmes
+    // Evaluar cada actividad variable
     input.variableActivities.forEach((varAct) => {
-      const duration = varAct.duration || 1;
+      // Verificar si debe agendarse
+      const scheduleDecision = shouldScheduleActivity(varAct, phase, input.symptoms, i);
       
-      // Buscar slot disponible
+      if (!scheduleDecision.shouldSchedule) {
+        // Agregar a actividades no agendadas si no está ya en la lista
+        const alreadyUnScheduled = unScheduledActivities.some(u => u.title === varAct.title);
+        if (!alreadyUnScheduled) {
+          unScheduledActivities.push({
+            title: varAct.title,
+            category: varAct.category,
+            reason: scheduleDecision.reason || 'No recomendado para esta fase',
+            suggestedAction: scheduleDecision.suggestedAction || 'skip',
+            alternativeSuggestion: scheduleDecision.suggestedAction === 'modify' 
+              ? `Considera hacer una versión más suave de "${varAct.title}" o reemplazarla con una actividad de descanso como yoga suave, meditación o caminata ligera.`
+              : scheduleDecision.suggestedAction === 'postpone'
+              ? `Puedes posponer "${varAct.title}" para la próxima semana cuando tengas más energía.`
+              : undefined
+          });
+        }
+        return; // No agendar esta actividad
+      }
+      
+      // Si debe agendarse, buscar slot disponible
+      const duration = varAct.duration || 1;
       const slot = findNextAvailableSlot(
         dateStr,
         duration,
@@ -317,8 +419,18 @@ function generateDefaultResponse(input: HormonalAgentInput): HormonalAgentRespon
     ...(input.goals.includes('bajar estrés') ? ['Incluye actividades de relajación y mindfulness en tu rutina.'] : []),
   ];
   
+  // Generar recomendación de descanso si es necesario
+  let restRecommendation: string | undefined;
+  if (needsRestWeek && unScheduledActivities.length > 0) {
+    const heavyActivities = unScheduledActivities.filter(u => isHeavyActivity({ title: u.title, category: u.category }));
+    if (heavyActivities.length > 0) {
+      restRecommendation = `Esta semana es mejor descansar. ${heavyActivities.length} actividad${heavyActivities.length > 1 ? 'es' : ''} física${heavyActivities.length > 1 ? 's' : ''} no se ha agendado porque tu fase hormonal y síntomas sugieren que es momento de recuperación. Puedes reevaluar estas actividades o agregar alternativas más suaves.`;
+    }
+  }
+  
   return {
     activities,
+    unScheduledActivities: unScheduledActivities.length > 0 ? unScheduledActivities : undefined,
     recommendations,
     phaseInsights: `Estás en la fase ${input.hormonalPhase} del ciclo. ${input.hormonalPhase === 'Menstrual' ? 'Es momento de descanso y autocuidado.' : input.hormonalPhase === 'Follicular' ? 'Tu energía está aumentando, ideal para nuevos proyectos.' : input.hormonalPhase === 'Ovulatory' ? 'Estás en tu pico de energía, aprovecha para actividades importantes.' : 'Tu energía está disminuyendo, enfócate en terminar tareas pendientes.'}`,
     energyForecast: {
@@ -326,6 +438,7 @@ function generateDefaultResponse(input: HormonalAgentInput): HormonalAgentRespon
       tomorrow: getCyclePhase(((input.cycleDay % 28) + 1)) === 'Follicular' || getCyclePhase(((input.cycleDay % 28) + 1)) === 'Ovulatory' ? 'high' : getCyclePhase(((input.cycleDay % 28) + 1)) === 'Luteal' ? 'medium' : 'low',
       week: 'medium',
     },
+    restRecommendation,
   };
 }
 

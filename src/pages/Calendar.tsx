@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePrivySafe } from '../hooks/usePrivySafe';
 import { generateHormonalActivities, convertToScheduledTasks } from '../utils/hormonalAgent';
-import type { HormonalAgentInput, HormonalAgentResponse, Symptom } from '../types/hormonal';
+import type { HormonalAgentInput, HormonalAgentResponse, Symptom, UnScheduledActivity } from '../types/hormonal';
 import { getCyclePhase } from '../utils/cycleLogic';
 import { getCurrentCycleDay } from '../utils/cycleCalculator';
 import { loadUserData, saveUserData } from '../utils/storage';
@@ -40,6 +40,7 @@ const Calendar = () => {
   const [currentCycleDay, setCurrentCycleDay] = useState(1);
   const [selectedSymptoms, setSelectedSymptoms] = useState<Symptom[]>([]);
   const [proposedSchedule, setProposedSchedule] = useState<ScheduledTask[] | null>(null);
+  const [agentResponse, setAgentResponse] = useState<HormonalAgentResponse | null>(null);
   const [generatingActivities, setGeneratingActivities] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -120,6 +121,8 @@ const Calendar = () => {
       ];
       
       setProposedSchedule(newSchedule);
+      // Guardar respuesta completa para mostrar recomendaciones
+      setAgentResponse(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al generar propuesta');
       console.error('Error al generar propuesta:', err);
@@ -277,11 +280,61 @@ const Calendar = () => {
 
             {hasChanges ? (
               <>
+                {/* Recomendación de descanso */}
+                {agentResponse?.restRecommendation && (
+                  <div className={styles.restRecommendation}>
+                    <h4 className={styles.restTitle}>💤 Recomendación de Descanso</h4>
+                    <p className={styles.restText}>{agentResponse.restRecommendation}</p>
+                  </div>
+                )}
+
+                {/* Actividades no agendadas */}
+                {agentResponse?.unScheduledActivities && agentResponse.unScheduledActivities.length > 0 && (
+                  <div className={styles.unScheduledSection}>
+                    <h4 className={styles.unScheduledTitle}>
+                      ⏸️ Actividades No Agendadas ({agentResponse.unScheduledActivities.length})
+                    </h4>
+                    <p className={styles.unScheduledSubtitle}>
+                      Estas actividades no se han agendado para esta semana según tu fase hormonal y síntomas:
+                    </p>
+                    <div className={styles.unScheduledList}>
+                      {agentResponse.unScheduledActivities.map((unScheduled, idx) => (
+                        <div key={idx} className={styles.unScheduledItem}>
+                          <div className={styles.unScheduledHeader}>
+                            <span className={styles.unScheduledActivityName}>{unScheduled.title}</span>
+                            <span className={styles.unScheduledCategory}>{unScheduled.category}</span>
+                          </div>
+                          <p className={styles.unScheduledReason}>{unScheduled.reason}</p>
+                          {unScheduled.alternativeSuggestion && (
+                            <p className={styles.unScheduledAlternative}>
+                              💡 {unScheduled.alternativeSuggestion}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className={styles.reevaluateActions}>
+                      <button
+                        onClick={handleGenerateProposal}
+                        className={styles.reevaluateButton}
+                      >
+                        🔄 Reevaluar Actividades
+                      </button>
+                      <p className={styles.reevaluateNote}>
+                        Puedes modificar tus síntomas o generar una nueva propuesta
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className={styles.changesSummary}>
                   <p>
                     <strong>{proposedSchedule.length}</strong> tareas programadas
                     {proposedSchedule.length !== userData.schedule.length && (
                       <span> (antes: {userData.schedule.length})</span>
+                    )}
+                    {agentResponse?.unScheduledActivities && agentResponse.unScheduledActivities.length > 0 && (
+                      <span> • {agentResponse.unScheduledActivities.length} no agendadas</span>
                     )}
                   </p>
                 </div>

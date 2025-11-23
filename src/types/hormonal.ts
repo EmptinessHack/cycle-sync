@@ -109,10 +109,22 @@ export interface GeneratedActivity {
 }
 
 /**
+ * Actividad no agendada con razón
+ */
+export interface UnScheduledActivity {
+  title: string;
+  category: string;
+  reason: string; // Razón por la que no se agendó
+  suggestedAction: 'skip' | 'postpone' | 'modify'; // Qué hacer con esta actividad
+  alternativeSuggestion?: string; // Sugerencia alternativa
+}
+
+/**
  * Respuesta del agente hormonal
  */
 export interface HormonalAgentResponse {
   activities: GeneratedActivity[];
+  unScheduledActivities?: UnScheduledActivity[]; // Actividades que no se agendaron
   recommendations: string[]; // Recomendaciones generales
   phaseInsights: string; // Insights sobre la fase actual
   energyForecast: {
@@ -120,5 +132,6 @@ export interface HormonalAgentResponse {
     tomorrow: 'high' | 'medium' | 'low';
     week: 'high' | 'medium' | 'low';
   };
+  restRecommendation?: string; // Recomendación específica de descanso
 }
 
