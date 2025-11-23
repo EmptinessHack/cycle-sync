@@ -4,13 +4,15 @@ import styles from './TaskFormCard.module.css';
 
 interface TaskFormCardProps {
   task?: Task;
-  onSave: (task: Task) => void;
+  onSave: (task: Task) => void | Promise<void>;
   onDelete?: () => void;
+  isUploading?: boolean;
+  uploadError?: string;
 }
 
 const categories = ['Entrepreneur', 'Home', 'Mother', 'Student', 'Fitness', 'Social', 'Self-care'];
 
-const TaskFormCard = ({ task, onSave, onDelete }: TaskFormCardProps) => {
+const TaskFormCard = ({ task, onSave, onDelete, isUploading, uploadError }: TaskFormCardProps) => {
   const [formData, setFormData] = useState<Task>(
     task || {
       id: Date.now().toString(),
@@ -157,9 +159,34 @@ const TaskFormCard = ({ task, onSave, onDelete }: TaskFormCardProps) => {
         </label>
       </div>
 
-      <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: 'var(--spacing-sm)' }}>
-        {task ? 'Update Task' : 'Add Task'}
+      <button 
+        type="submit" 
+        className="btn-primary" 
+        style={{ width: '100%', marginTop: 'var(--spacing-sm)' }}
+        disabled={isUploading}
+      >
+        {isUploading ? (
+          <>⏳ Guardando en IPFS...</>
+        ) : task ? (
+          'Update Task'
+        ) : (
+          'Add Task'
+        )}
       </button>
+      
+      {uploadError && (
+        <div style={{ 
+          marginTop: 'var(--spacing-sm)', 
+          padding: 'var(--spacing-sm)', 
+          background: '#fee', 
+          color: '#c33',
+          borderRadius: '4px',
+          fontSize: '0.9rem'
+        }}>
+          ⚠️ Error al guardar en IPFS: {uploadError}
+        </div>
+      )}
+      
     </form>
   );
 };
